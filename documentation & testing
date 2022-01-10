@@ -1,0 +1,291 @@
+// Grace Biemans & Nick Heleta
+// geb965 & nwh397
+
+
+I left my print statements in the four functions because I used them to make sure my tests ran properly and so that you can see where the print statements in the tests came from
+
+
+
+    Implementation of the rules
+
+Rule 1: Cats and dogs can't be groomed at the same time
+- To implement this rule, I have two variables that keep track of how many dogs and cats are being groomed (using a station).
+- In newpet(), I check if the opposite kind of animal is being groomed at the moment, and if it is, then the current animal is told to wait.
+
+Rule 2: Only one pet can occupy a grooming station at a time
+- I used a variable to keep track of how many stations are available.
+    - When a pet is added/given a station, the number of stations available is decreased by one.
+    - When a pet is removed from a station, the number of stations available is increased by one.
+    - In newpet(), a pet has to wait to be added if the number of stations available is zero.
+- With this, extra stations are not used and the number of stations available is only changed by one for each pet that uses it.
+
+Rule 3: Neither cats nor dogs should wait indefinitely to be groomed
+- I use two variable to keep track of how many cats and dogs are waiting for a station.
+    - In newpet(), the pet has to wait if there are more of the other kind of animal waiting AND there are none of its kind in a station already
+        - If there were some of its type being groomed, the other type wouldn't be able to get a station yet anyway, so give the current pet a station
+        - However, if there are none of its type being groomed and there are more of the other type waiting for a station, it lets the other kind of pet use them first
+- So, the type of pet with the most waiting gets to go first if they are able (considering rule 1), making it so that neither has a buildup of waiting pets or is neglected
+
+Rule 4: Solution should be efficient
+- Stations are always filled when they can be
+- Both cats and dogs are valued equally and given stations in the same way
+
+
+
+
+    Testing of the rules
+
+    TEST 1: RULE 2: Only one pet can occupy a grooming station at a time
+    PURPOSE: show that a pet will wait if there is not an available grooming station
+    - There is one grooming station and three pets
+    - One pet can go at a time, so when the second pet (dog) gets to newpet, it has to wait until the first is removed
+    - The third pet (cat) also has to wait
+    - Once the first pet (type 3) is removed, the second pet (dog) is removed from the waiting list and given the station
+    - When the second pet is done, the third pet is removed from the waiting list and given the station
+
+1. Adding new pet of type 3 ...
+  Checking if other needs to wait
+  Pet gets grooming station:
+     Dogs grooming: 0 - Cats grooming: 0 - stations: 0 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 3 added
+Groom for 3 seconds
+
+1. Adding new pet of type 2 ...
+  Checking if need to wait:
+     Cats grooming: 0 - stations: 0 - dogs waiting: 0 - cats waiting: 0
+Waiting...
+
+1. Adding new pet of type 1 ...
+  Checking if need to wait:
+     Dogs grooming: 0 - stations: 0 - dogs waiting: 1 - cats waiting: 0
+Waiting...
+
+Removed pet of type 3
+
+Removing a dog from waiting list.....
+  Pet gets grooming station:
+     Dogs grooming: 1 - Cats grooming: 0 - stations: 0 - dogs waiting: 0 - cats waiting: 1
+2. Pet of type 2 added
+Groom for 2 seconds
+
+Removed pet of type 2
+
+Removing a cat from waiting list.....
+  Pet gets grooming station:
+     Dogs grooming: 0 - Cats grooming: 1 - stations: 0 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 1 added
+Groom for 2 seconds
+
+Removed pet of type 1
+
+Petgroom done
+
+
+
+
+    TEST TWO: RULE 1: Cats and dogs can't be groomed at the same time
+    PURPOSE: show that dogs will wait if a cat is being groomed
+    - There will be 2 pets coming in around the same time and 2 stations. The pets could be groomed at the same time, but they are a cat and a dog
+    - The first pet (cat) gets a grooming station right away
+    - The second pet (dog) has to wait because there is a cat being groomed
+    - Once the cat is removed, the dog is removed from the waiting list and given a station
+
+1. Adding new pet of type 1 ...
+  Checking if need to wait:
+     Dogs grooming: 0 - stations: 2 - dogs waiting: 0 - cats waiting: 0
+  Pet gets grooming station:
+     Dogs grooming: 0 - Cats grooming: 1 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 1 added
+Groom for 3 seconds
+
+1. Adding new pet of type 2 ...
+  Checking if need to wait:
+     Cats grooming: 1 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+Waiting...
+
+Removed pet of type 1
+
+Removing a dog from waiting list.....
+  Pet gets grooming station:
+     Dogs grooming: 1 - Cats grooming: 0 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 2 added
+Groom for 3 seconds
+
+Removed pet of type 2
+
+Petgroom done
+
+
+
+
+    TEST THREE: RULE 1: Cats and dogs can't be groomed at the same time
+    PURPOSE: show that cats will wait if a dog is being groomed
+    - There will be 2 pets coming in around the same time and 2 stations. The pets could be groomed at the same time, but they are a cat and a dog
+    - The first pet (dog) gets a grooming station right away
+    - The second pet (cat) has to wait because there is a dog being groomed
+    - Once the dog is removed, the cat is removed from the waiting list and given a station
+
+1. Adding new pet of type 2 ...
+  Checking if need to wait:
+     Cats grooming: 0 - stations: 2 - dogs waiting: 0 - cats waiting: 0
+  Pet gets grooming station:
+     Dogs grooming: 1 - Cats grooming: 0 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 2 added
+Groom for 3 seconds
+
+1. Adding new pet of type 1 ...
+  Checking if need to wait:
+     Dogs grooming: 1 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+Waiting...
+
+Removed pet of type 2
+
+Removing a cat from waiting list.....
+  Pet gets grooming station:
+     Dogs grooming: 0 - Cats grooming: 1 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 1 added
+Groom for 3 seconds
+
+Removed pet of type 1
+
+Petgroom done
+
+
+
+
+    TEST FOUR: RULE 2: Only one pet can occupy a grooming station at a time
+    PURPOSE: show that a pet will wait if there is not an available grooming station
+    - Same as test 1, but with multiple stations rather than just 1
+    - two stations, three pets that could all be groomed at the same time if there were enough stations, so one will have to wait for a station to open
+    - Adds a dog and a pet of type, so the two stations are both full
+    - The third pet has to wait until one of the first two pets is removed from the station
+
+1. Adding new pet of type 2 ...
+  Checking if need to wait:
+     Cats grooming: 0 - stations: 2 - dogs waiting: 0 - cats waiting: 0
+  Pet gets grooming station:
+     Dogs grooming: 1 - Cats grooming: 0 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 2 added
+Groom for 3 seconds
+
+1. Adding new pet of type 3 ...
+  Checking if other needs to wait
+  Pet gets grooming station:
+     Dogs grooming: 1 - Cats grooming: 0 - stations: 0 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 3 added
+Groom for 2 seconds
+
+1. Adding new pet of type 3 ...
+  Checking if other needs to wait
+Waiting...
+
+Removed pet of type 2
+
+  Pet gets grooming station:
+     Dogs grooming: 0 - Cats grooming: 0 - stations: 0 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 3 added
+Groom for 1 seconds
+
+Removed pet of type 3
+
+Removed pet of type 3
+
+Petgroom done
+
+
+
+
+    TEST FIVE: RULE 3: Neither types of pet can wait indefinitely and RULE 4: efficient solution
+    PURPOSE: show that neither dogs nor cats are always chosen over the other for grooming stations
+    - When deciding if a pet should go next, if the opposite kind is grooming, the pet waits
+    - if the opposite kind of pet isn't grooming, the pet goes next if there is more of their type waiting than of the other type
+    - with this test, see alternation between dogs and cats, neither waits indefinitely (rule 3)
+    - test shows efficiency, if a station can be filled, it will be, and neither type of pet if given more priority than the other
+
+1. Adding new pet of type 2 ...
+  Checking if need to wait:
+     Cats grooming: 0 - stations: 2 - dogs waiting: 0 - cats waiting: 0
+  Pet gets grooming station:
+     Dogs grooming: 1 - Cats grooming: 0 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 2 added
+Groom for 3 seconds
+
+1. Adding new pet of type 1 ...
+  Checking if need to wait:
+     Dogs grooming: 1 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+Waiting...
+
+1. Adding new pet of type 2 ...
+  Checking if need to wait:
+     Cats grooming: 0 - stations: 1 - dogs waiting: 0 - cats waiting: 1
+  Pet gets grooming station:
+     Dogs grooming: 2 - Cats grooming: 0 - stations: 0 - dogs waiting: 0 - cats waiting: 1
+2. Pet of type 2 added
+Groom for 2 seconds
+
+Removed pet of type 2
+
+Waiting...
+
+1. Adding new pet of type 1 ...
+  Checking if need to wait:
+     Dogs grooming: 1 - stations: 1 - dogs waiting: 0 - cats waiting: 1
+Waiting...
+
+Removed pet of type 2
+
+Removing a cat from waiting list.....
+  Pet gets grooming station:
+     Dogs grooming: 0 - Cats grooming: 1 - stations: 1 - dogs waiting: 0 - cats waiting: 1
+2. Pet of type 1 added
+Groom for 2 seconds
+
+1. Adding new pet of type 2 ...
+  Checking if need to wait:
+     Cats grooming: 1 - stations: 1 - dogs waiting: 0 - cats waiting: 1
+Waiting...
+
+1. Adding new pet of type 1 ...
+  Checking if need to wait:
+     Dogs grooming: 0 - stations: 1 - dogs waiting: 1 - cats waiting: 1
+  Pet gets grooming station:
+     Dogs grooming: 0 - Cats grooming: 2 - stations: 0 - dogs waiting: 1 - cats waiting: 1
+2. Pet of type 1 added
+Groom for 2 seconds
+
+Removed pet of type 1
+
+Removing a cat from waiting list.....
+  Pet gets grooming station:
+     Dogs grooming: 0 - Cats grooming: 2 - stations: 0 - dogs waiting: 1 - cats waiting: 0
+2. Pet of type 1 added
+Groom for 2 seconds
+
+1. Adding new pet of type 2 ...
+  Checking if need to wait:
+     Cats grooming: 2 - stations: 0 - dogs waiting: 1 - cats waiting: 0
+Waiting...
+
+Removed pet of type 1
+
+Waiting...
+
+Removed pet of type 1
+
+Removing a dog from waiting list.....
+  Pet gets grooming station:
+     Dogs grooming: 1 - Cats grooming: 0 - stations: 1 - dogs waiting: 1 - cats waiting: 0
+2. Pet of type 2 added
+Groom for 2 seconds
+
+Removed pet of type 2
+
+Removing a dog from waiting list.....
+  Pet gets grooming station:
+     Dogs grooming: 1 - Cats grooming: 0 - stations: 1 - dogs waiting: 0 - cats waiting: 0
+2. Pet of type 2 added
+Groom for 2 seconds
+
+Removed pet of type 2
+
+Petgroom done
